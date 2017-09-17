@@ -64,7 +64,7 @@ def checkout(){
 	stage('Checkout'){
 		deleteDir()
 		checkout scm
-		gitCommit = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
+		gitCommit = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%H'").trim()
 	}
 }
 
