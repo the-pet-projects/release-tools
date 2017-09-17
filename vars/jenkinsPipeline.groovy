@@ -86,10 +86,10 @@ void buildStep(String context, Closure closure) {
 	try {
 		setBuildStatus(context, "In progress...", "PENDING");
 		closure();
+		setBuildStatus(context, "Success", "SUCCESS");
 	} catch (Exception e) {
 		setBuildStatus(context, e.toString().take(140), "FAILURE");
 	}
-	setBuildStatus(context, "Success", "SUCCESS");
 }
 
 // Updated to account for context
