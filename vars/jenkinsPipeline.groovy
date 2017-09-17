@@ -171,7 +171,7 @@ void buildStep(String context, Closure closure) {
 void setBuildStatus(String context, String message, String state) {
 	step([
 		$class: "GitHubCommitStatusSetter",
-		commitShaSource: [$class: 'ManuallyEnteredShaSource', sha: gitCommit]
+		commitShaSource: [$class: 'ManuallyEnteredShaSource', sha: gitCommit],
 		reposSource: [$class: "ManuallyEnteredRepositorySource", url: gitRepoUrl()],
 		contextSource: [$class: "ManuallyEnteredCommitContextSource", context: context],
 		errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "UNSTABLE"]],
