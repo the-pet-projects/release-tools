@@ -1,24 +1,28 @@
 // vars/jenkinsPipeline.groovy
-
+	
 def call(body) {
     // evaluate the body block, and collect configuration into the object
     def config = [:]
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = config
     body()
-
+	
     // now build, based on the configuration provided
     node {
 		currentBuild.result = "SUCCESS"
-		def version = VersionNumber(versionNumberString: '0.0.0.${BUILD_DATE_FORMATTED,\"yy\"}${BUILD_MONTH, XX}.${BUILDS_THIS_MONTH}')
+		
+		def latestVersionPrefix = config.releaseVersion'1.0.0'
+		def featureVersionPrefix = '0.1.0'		
+				
+		def version = VersionNumber(versionNumberString: '.${BUILD_DATE_FORMATTED,\"yy\"}${BUILD_MONTH, XX}.${BUILDS_THIS_MONTH}')
 		
 		try {
 			if (env.BRANCH_NAME != 'master') {
-				if (!isPRMergeBuild()) {
-					version = version + '-alpha'
+				if (isPRMergeBuild()) {
+					version = latestVersionPrefix + version + '-beta'
 				}
 				else {
-					version = version + "-${env.BRANCH_NAME}"
+					version = featureVersionPrefix + version + '-alpha'
 				}
 				withEnv(['PIPELINE_VERSION='+version]) {
 					timestamps {
@@ -33,7 +37,8 @@ def call(body) {
 					}
 				}
 			} // master branch / production
-			else {				
+			else {
+				version = latestVersionPrefix + version
 				withEnv(['PIPELINE_VERSION='+version]) {
 					timestamps {
 						checkout()					
@@ -53,10 +58,13 @@ def call(body) {
 	}
 }
 
+def gitCommit = ''
+
 def checkout(){
 	stage('Checkout'){
 		deleteDir()
 		checkout scm
+		gitCommit = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
 	}
 }
 
@@ -163,6 +171,7 @@ void buildStep(String context, Closure closure) {
 void setBuildStatus(String context, String message, String state) {
 	step([
 		$class: "GitHubCommitStatusSetter",
+		commitShaSource: [$class: 'ManuallyEnteredShaSource', sha: gitCommit]
 		reposSource: [$class: "ManuallyEnteredRepositorySource", url: gitRepoUrl()],
 		contextSource: [$class: "ManuallyEnteredCommitContextSource", context: context],
 		errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "UNSTABLE"]],
