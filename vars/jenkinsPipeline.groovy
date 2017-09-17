@@ -10,65 +10,32 @@ def call(body) {
     // now build, based on the configuration provided
     node {
 		currentBuild.result = "SUCCESS"
+		def version = VersionNumber(versionNumberString: '0.0.0.${BUILD_DATE_FORMATTED,\"yy\"}${BUILD_MONTH, XX}.${BUILDS_THIS_MONTH}')
 		
 		try {
-			def version = VersionNumber(versionNumberString: '0.0.0.${BUILD_DATE_FORMATTED,\"yy\"}${BUILD_MONTH, XX}.${BUILDS_THIS_MONTH}')
-			withEnv(['PIPELINE_VERSION='+version]) {
-				timestamps {
-					stage('Checkout'){
-						deleteDir()
-						checkout scm
-					}
-					
-					buildStep('Build'){
-						currentBuild.displayName = '#'+env.PIPELINE_VERSION
-						try {
-							sh '''sh ./deploy/scripts/build.ci.sh;'''
-						}
-						finally {
-							sh '''sh ./deploy/scripts/build.ci.cleanup.sh;'''						
+			if (env.BRANCH_NAME != 'master') {
+				version = version + '-alpha'
+				withEnv(['PIPELINE_VERSION='+version]) {
+					timestamps {
+						checkout()					
+						build()
+						unitTests()
+						integrationTests()
+						if (!isPRMergeBuild()) {
+							manualPromotion()
+							deploy()
 						}
 					}
-
-					buildStep('Unit Tests'){
-						try {
-							sh '''sh ./deploy/scripts/build.ci.unittests.sh;'''
-							step([$class: 'MSTestPublisher', testResultsFile: '**/test/unit/**/*.trx', failOnError: true, keepLongStdio: true])
-						}
-						finally {
-							sh '''sh ./deploy/scripts/build.ci.unittests.cleanup.sh;'''		
-						}
-					}
-
-					buildStep('Integration Tests'){
-						withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'DOCKER_USER_PASSWORD', usernameVariable: 'DOCKER_USER_NAME')]) {
-							sshagent(['Toggling-It-Api']) {
-								sh '''BUILD_VERSION=${PIPELINE_VERSION};
-									export BUILD_VERSION;
-									sh ./deploy/scripts/build.ci.integrationtests.sh;
-									exitCode=$?;
-									if [ $exitCode -eq 0 ]; then
-										echo "integration tests successful... pushing img to dockerhub...";
-										docker login -u ${DOCKER_USER_NAME} -p ${DOCKER_USER_PASSWORD};
-										sh ./deploy/scripts/build.ci.pushimg.sh;
-										exitCode=$?;
-										docker logout;
-									fi;
-									sh ./deploy/scripts/build.ci.integrationtests.cleanup.sh;
-									exit $exitCode;'''
-								
-								sh '''git tag -f ${PIPELINE_VERSION};
-									git push origin ${PIPELINE_VERSION};'''								
-								
-								step([$class: 'MSTestPublisher', testResultsFile: '**/test/integration/**/*.trx', failOnError: true, keepLongStdio: true])
-							}
-						}			
-					}
-					
-					stage('Deploy'){
-						withCredentials([usernamePassword(credentialsId: 'sshrenatorenabee', passwordVariable: 'SSH_USER_PASSWORD', usernameVariable: 'SSH_USER_NAME')]) {
-							executeSshCommand(env.SSH_USER_NAME, env.SSH_USER_PASSWORD, 'docker service update -d=false --image petprojects/${config.imageName}:${PIPELINE_VERSION} ${config.imageName}')
-						}
+				}
+			} // master branch / production
+			else {				
+				withEnv(['PIPELINE_VERSION='+version]) {
+					timestamps {
+						checkout()					
+						build()
+						unitTests()
+						integrationTests()					
+						deploy()
 					}
 				}
 			}
@@ -78,6 +45,91 @@ def call(body) {
 			cleanWs()
 			throw err
 		}
+	}
+}
+
+def checkout(){
+	stage('Checkout'){
+		deleteDir()
+		checkout scm
+	}
+}
+
+def build(){
+	buildStep('Build'){
+		currentBuild.displayName = '#'+env.PIPELINE_VERSION
+		try {
+			sh '''sh ./deploy/scripts/build.ci.sh;'''
+		}
+		finally {
+			sh '''sh ./deploy/scripts/build.ci.cleanup.sh;'''						
+		}
+	}
+}
+
+def unitTests(){
+	buildStep('Unit Tests'){
+		try {
+			sh '''sh ./deploy/scripts/build.ci.unittests.sh;'''
+			step([$class: 'MSTestPublisher', testResultsFile: '**/test/unit/**/*.trx', failOnError: true, keepLongStdio: true])
+		}
+		finally {
+			sh '''sh ./deploy/scripts/build.ci.unittests.cleanup.sh;'''		
+		}
+	}
+}
+
+def integrationTests(){
+	buildStep('Integration Tests'){
+		withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'DOCKER_USER_PASSWORD', usernameVariable: 'DOCKER_USER_NAME')]) {
+			sshagent(['Toggling-It-Api']) {
+				sh '''BUILD_VERSION=${PIPELINE_VERSION};
+					export BUILD_VERSION;
+					sh ./deploy/scripts/build.ci.integrationtests.sh;
+					exitCode=$?;
+					if [ $exitCode -eq 0 ]; then
+						echo "integration tests successful... pushing img to dockerhub...";
+						docker login -u ${DOCKER_USER_NAME} -p ${DOCKER_USER_PASSWORD};
+						sh ./deploy/scripts/build.ci.pushimg.sh;
+						exitCode=$?;
+						docker logout;
+					fi;
+					sh ./deploy/scripts/build.ci.integrationtests.cleanup.sh;
+					exit $exitCode;'''
+				
+				sh '''git tag -f ${PIPELINE_VERSION};
+					git push origin ${PIPELINE_VERSION};'''								
+				
+				step([$class: 'MSTestPublisher', testResultsFile: '**/test/integration/**/*.trx', failOnError: true, keepLongStdio: true])
+			}
+		}			
+	}
+}
+
+def deploy(){
+	stage('Deploy'){
+		withCredentials([usernamePassword(credentialsId: 'sshrenatorenabee', passwordVariable: 'SSH_USER_PASSWORD', usernameVariable: 'SSH_USER_NAME')]) {
+			executeSshCommand(env.SSH_USER_NAME, env.SSH_USER_PASSWORD, 'docker service update -d=false --image petprojects/${config.imageName}:${PIPELINE_VERSION} ${config.imageName}')
+		}
+	}
+}
+
+def isPRMergeBuild() {
+    return (env.BRANCH_NAME ==~ /^PR-\d+$/)
+}
+
+def manualPromotion() {
+	stage('Manual Promotion'){
+		// we need a first milestone step so that all jobs entering this stage are tracked an can be aborted if needed
+		milestone 1
+		
+		// time out manual approval after ten minutes
+		timeout(time: 10, unit: 'MINUTES') {
+			input message: "Deploy non-master build to production?"
+		}
+		
+		// this will kill any job which is still in the input step
+		milestone 2
 	}
 }
 
