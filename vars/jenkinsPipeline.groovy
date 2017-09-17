@@ -14,7 +14,12 @@ def call(body) {
 		
 		try {
 			if (env.BRANCH_NAME != 'master') {
-				version = version + '-alpha'
+				if (!isPRMergeBuild()) {
+					version = version + '-alpha'
+				}
+				else {
+					version = version + "-${env.BRANCH_NAME}"
+				}
 				withEnv(['PIPELINE_VERSION='+version]) {
 					timestamps {
 						checkout()					
@@ -124,7 +129,7 @@ def manualPromotion() {
 		milestone 1
 		
 		// time out manual approval after ten minutes
-		timeout(time: 10, unit: 'MINUTES') {
+		timeout(time: 2, unit: 'MINUTES') {
 			input message: "Deploy non-master build to production?"
 		}
 		
