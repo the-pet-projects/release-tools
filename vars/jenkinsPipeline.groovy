@@ -62,6 +62,12 @@ def call(body) {
 							}
 						}			
 					}
+					
+					stage('Deploy'){
+						withCredentials([usernamePassword(credentialsId: 'sshrenatorenabee', passwordVariable: 'SSH_USER_PASSWORD', usernameVariable: 'SSH_USER_NAME')]) {
+							executeSshCommand(env.SSH_USER_NAME, env.SSH_USER_PASSWORD, 'docker service update -d=false --image petprojects/${config.imageName}:${PIPELINE_VERSION} ${config.imageName}')
+						}
+					}
 				}
 			}
 		}
@@ -77,7 +83,7 @@ def gitRepoUrl() {
     def tokens = "${env.JOB_NAME}".tokenize('/')
 	def org = tokens[tokens.size()-3]
 	def repo = tokens[tokens.size()-2]
-	def result = org + repo
+	def result = 'https://github.com/' + org + '/' + repo
 	result
 }
 
@@ -89,6 +95,7 @@ void buildStep(String context, Closure closure) {
 		setBuildStatus(context, "Success", "SUCCESS");
 	} catch (Exception e) {
 		setBuildStatus(context, e.toString().take(140), "FAILURE");
+		throw e
 	}
 }
 
