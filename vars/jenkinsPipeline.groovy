@@ -15,11 +15,13 @@ def call(body) {
 			def version = VersionNumber(versionNumberString: '0.0.0.${BUILD_DATE_FORMATTED,\"yy\"}${BUILD_MONTH, XX}.${BUILDS_THIS_MONTH}')
 			withEnv(['PIPELINE_VERSION='+version]) {
 				timestamps {
-					buildStep('Build'){
-						gitContext = 'Build'
-						currentBuild.displayName = '#'+env.PIPELINE_VERSION
+					stage('Checkout'){
 						deleteDir()
-						checkout scm			
+						checkout scm
+					}
+					
+					buildStep('Build'){
+						currentBuild.displayName = '#'+env.PIPELINE_VERSION
 						try {
 							sh '''sh ./deploy/scripts/build.ci.sh;'''
 						}
@@ -88,14 +90,15 @@ def gitRepoUrl() {
 }
 
 void buildStep(String context, Closure closure) {
-	stage(context);
-	try {
-		setBuildStatus(context, "In progress...", "PENDING");
-		closure();
-		setBuildStatus(context, "Success", "SUCCESS");
-	} catch (Exception e) {
-		setBuildStatus(context, e.toString().take(140), "FAILURE");
-		throw e
+	stage(context) {
+		try {
+			setBuildStatus(context, "In progress...", "PENDING");
+			closure();
+			setBuildStatus(context, "Success", "SUCCESS");
+		} catch (Exception e) {
+			setBuildStatus(context, e.toString().take(140), "FAILURE");
+			throw e
+		}
 	}
 }
 
