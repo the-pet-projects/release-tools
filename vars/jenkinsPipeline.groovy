@@ -32,7 +32,7 @@ def call(body) {
 						integrationTests()
 						if (!isPRMergeBuild()) {
 							manualPromotion()
-							deploy()
+							deploy(config.imageName)
 						}
 					}
 				}
@@ -45,7 +45,7 @@ def call(body) {
 						build()
 						unitTests()
 						integrationTests()					
-						deploy()
+						deploy(config.imageName)
 					}
 				}
 			}
@@ -119,10 +119,10 @@ def integrationTests(){
 	}
 }
 
-def deploy(){
+def deploy(String imageName){
 	stage('Deploy'){
 		withCredentials([usernamePassword(credentialsId: 'sshrenatorenabee', passwordVariable: 'SSH_USER_PASSWORD', usernameVariable: 'SSH_USER_NAME')]) {
-			executeSshCommand(env.SSH_USER_NAME, env.SSH_USER_PASSWORD, "docker service update -d=false --image petprojects/${config.imageName}:${env.PIPELINE_VERSION} ${config.imageName}")
+			executeSshCommand(env.SSH_USER_NAME, env.SSH_USER_PASSWORD, "docker service update -d=false --image petprojects/${imageName}:${env.PIPELINE_VERSION} ${imageName}")
 		}
 	}
 }
