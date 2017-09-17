@@ -87,11 +87,7 @@ void buildStep(String context, Closure closure) {
 		setBuildStatus(context, "In progress...", "PENDING");
 		closure();
 	} catch (Exception e) {
-		StringWriter sw = new StringWriter();
-		PrintWriter pw = new PrintWriter(sw);
-		e.printStackTrace(pw);
-		String sStackTrace = sw.toString(); // stack trace as a string
-		setBuildStatus(context, sStackTrace.take(140), "FAILURE");
+		setBuildStatus(context, e.toString().take(140), "FAILURE");
 	}
 	setBuildStatus(context, "Success", "SUCCESS");
 }
