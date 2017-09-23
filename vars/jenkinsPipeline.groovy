@@ -18,6 +18,7 @@ def call(body) {
 			def version = VersionNumber(versionNumberString: '.${BUILD_DATE_FORMATTED,\"yy\"}${BUILD_MONTH, XX}.${BUILDS_THIS_MONTH}')
 			currentBuild.displayName = '#'+version
 			
+			deleteDir()
 			prepareScripts()
 			
 			if (env.BRANCH_NAME != 'master') {
@@ -84,7 +85,6 @@ def prepareScripts(){
 
 def checkout(){
 	stage('Checkout'){
-		deleteDir()
 		checkout scm
 		gitCommit = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%H'").trim()
 	}
