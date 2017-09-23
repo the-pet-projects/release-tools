@@ -16,7 +16,7 @@ def call(body) {
 			def featureVersionPrefix = '0.1.0'		
 					
 			def version = VersionNumber(versionNumberString: '.${BUILD_DATE_FORMATTED,\"yy\"}${BUILD_MONTH, XX}.${BUILDS_THIS_MONTH}')
-			currentBuild.displayName = '#'+env.PIPELINE_VERSION
+			currentBuild.displayName = '#'+version
 			
 			prepareScripts()
 			
@@ -64,8 +64,6 @@ def gitCommit = ''
 
 def getSharedFile(String name){
 	def file = libraryResource name
-	sh 'echo "name=' + name + '"'
-	sh 'echo "file=' + file + '"'
 	writeFile file: name, text: file
 }
 
