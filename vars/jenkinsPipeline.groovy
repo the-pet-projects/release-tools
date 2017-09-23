@@ -121,7 +121,7 @@ def integrationTests(){
 			withEnv(['BUILD_VERSION='+env.PIPELINE_VERSION]) {
 				sshagent(['Toggling-It-Api']) {
 					try {						
-						sh '''docker-compose -f docker-compose.release.yml up'''
+						sh '''docker-compose -f docker-compose.release.yml up -d'''
 							
 						sh '''sh build.ci.integrationtests.sh;'''
 							
