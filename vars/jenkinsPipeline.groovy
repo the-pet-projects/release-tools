@@ -16,9 +16,6 @@ def call(body) {
 			def featureVersionPrefix = '0.1.0'		
 					
 			def version = VersionNumber(versionNumberString: '.${BUILD_DATE_FORMATTED,\"yy\"}${BUILD_MONTH, XX}.${BUILDS_THIS_MONTH}')
-			currentBuild.displayName = '#'+version
-			
-			deleteDir()
 			
 			if (env.BRANCH_NAME != 'master') {
 				if (isPRMergeBuild()) {
@@ -27,6 +24,8 @@ def call(body) {
 				else {
 					version = featureVersionPrefix + version + '-alpha'
 				}
+				currentBuild.displayName = '#'+version			
+				deleteDir()
 				withEnv(['PIPELINE_VERSION='+version,'IMAGE_NAME='+config.imageName,'CONTAINER_NAME='+config.containerName,'OUTPUT_PATH=build','SLN_FILE='+config.slnFile]) {
 					timestamps {
 						checkout()
@@ -43,6 +42,8 @@ def call(body) {
 			} // master branch / production
 			else {
 				version = latestVersionPrefix + version
+				currentBuild.displayName = '#'+version			
+				deleteDir()
 				withEnv(['PIPELINE_VERSION='+version,'IMAGE_NAME='+config.imageName,'CONTAINER_NAME='+config.containerName,'OUTPUT_PATH=build','SLN_FILE='+config.slnFile]) {
 					timestamps {
 						checkout()
