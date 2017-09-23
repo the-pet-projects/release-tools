@@ -117,29 +117,28 @@ def unitTests(){
 def integrationTests(){
 	buildStep('Integration Tests'){
 		withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'DOCKER_USER_PASSWORD', usernameVariable: 'DOCKER_USER_NAME')]) {
-			sshagent(['Toggling-It-Api']) {
-			try {
-			    sh '''BUILD_VERSION=${PIPELINE_VERSION};
-					export BUILD_VERSION;'''
-				
-			    sh '''docker-compose -f docker-compose.release.yml up'''
-					
-				sh build.ci.integrationtests.sh
-					
-				sh '''echo "integration tests successful... pushing img to dockerhub...";
-					docker login -u ${DOCKER_USER_NAME} -p ${DOCKER_USER_PASSWORD};
-					sh build.ci.pushimg.sh;						
-					docker logout;'''
-				
-				sh '''git tag -f ${PIPELINE_VERSION};
-					git push origin ${PIPELINE_VERSION};'''								
-				
-				step([$class: 'MSTestPublisher', testResultsFile: '**/test/integration/**/*.trx', failOnError: true, keepLongStdio: true])
-				
-				} finally {				
-					sh build.ci.integrationtests.cleanup.sh
+			withEnv(['BUILD_VERSION='+env.PIPELINE_VERSION]) {
+				sshagent(['Toggling-It-Api']) {
+					try {						
+						sh '''docker-compose -f docker-compose.release.yml up'''
+							
+						sh '''sh build.ci.integrationtests.sh;'''
+							
+						sh '''echo "integration tests successful... pushing img to dockerhub...";
+							docker login -u ${DOCKER_USER_NAME} -p ${DOCKER_USER_PASSWORD};
+							sh build.ci.pushimg.sh;						
+							docker logout;'''
+						
+						sh '''git tag -f ${PIPELINE_VERSION};
+							git push origin ${PIPELINE_VERSION};'''								
+						
+						step([$class: 'MSTestPublisher', testResultsFile: '**/test/integration/**/*.trx', failOnError: true, keepLongStdio: true])
+						
+					} finally {				
+						sh '''sh build.ci.integrationtests.cleanup.sh;'''
+					}
 				}
-			}
+			}			
 		}			
 	}
 }
