@@ -27,7 +27,7 @@ def call(body) {
 				else {
 					version = featureVersionPrefix + version + '-alpha'
 				}
-				withEnv(['PIPELINE_VERSION='+version,'IMAGE_NAME='+config.imageName,'CONTAINER_NAME='+config.containerName]) {
+				withEnv(['PIPELINE_VERSION='+version,'IMAGE_NAME='+config.imageName,'CONTAINER_NAME='+config.containerName,'OUTPUT_PATH=build']) {
 					timestamps {
 						checkout()					
 						build()
@@ -42,7 +42,7 @@ def call(body) {
 			} // master branch / production
 			else {
 				version = latestVersionPrefix + version
-				withEnv(['PIPELINE_VERSION='+version,'IMAGE_NAME='+config.imageName,'CONTAINER_NAME='+config.containerName]) {
+				withEnv(['PIPELINE_VERSION='+version,'IMAGE_NAME='+config.imageName,'CONTAINER_NAME='+config.containerName,'OUTPUT_PATH=build']) {
 					timestamps {
 						checkout()					
 						build()
@@ -124,7 +124,7 @@ def integrationTests(){
 				
 			    sh '''docker-compose -f docker-compose.release.yml up'''
 					
-				sh '''sh build.ci.integrationtests.sh;'''
+				sh build.ci.integrationtests.sh
 					
 				sh '''echo "integration tests successful... pushing img to dockerhub...";
 					docker login -u ${DOCKER_USER_NAME} -p ${DOCKER_USER_PASSWORD};
@@ -137,7 +137,7 @@ def integrationTests(){
 				step([$class: 'MSTestPublisher', testResultsFile: '**/test/integration/**/*.trx', failOnError: true, keepLongStdio: true])
 				
 				} finally {				
-					sh build.ci.integrationtests.cleanup.sh;
+					sh build.ci.integrationtests.cleanup.sh
 				}
 			}
 		}			
