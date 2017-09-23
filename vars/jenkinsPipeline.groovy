@@ -8,15 +8,18 @@ def call(body) {
     body()
 	
     // now build, based on the configuration provided
-    node {
-		currentBuild.result = "SUCCESS"
-		
-		def latestVersionPrefix = config.releaseVersion
-		def featureVersionPrefix = '0.1.0'		
-				
-		def version = VersionNumber(versionNumberString: '.${BUILD_DATE_FORMATTED,\"yy\"}${BUILD_MONTH, XX}.${BUILDS_THIS_MONTH}')
-		
+    node {		
 		try {
+			currentBuild.result = "SUCCESS"
+			
+			def latestVersionPrefix = config.releaseVersion
+			def featureVersionPrefix = '0.1.0'		
+					
+			def version = VersionNumber(versionNumberString: '.${BUILD_DATE_FORMATTED,\"yy\"}${BUILD_MONTH, XX}.${BUILDS_THIS_MONTH}')
+			currentBuild.displayName = '#'+env.PIPELINE_VERSION
+			
+			prepareScripts()
+			
 			if (env.BRANCH_NAME != 'master') {
 				if (isPRMergeBuild()) {
 					version = latestVersionPrefix + version + '-beta'
@@ -24,7 +27,7 @@ def call(body) {
 				else {
 					version = featureVersionPrefix + version + '-alpha'
 				}
-				withEnv(['PIPELINE_VERSION='+version]) {
+				withEnv(['PIPELINE_VERSION='+version,'IMAGE_NAME='+config.imageName,'CONTAINER_NAME='+config.containerName]) {
 					timestamps {
 						checkout()					
 						build()
@@ -39,7 +42,7 @@ def call(body) {
 			} // master branch / production
 			else {
 				version = latestVersionPrefix + version
-				withEnv(['PIPELINE_VERSION='+version]) {
+				withEnv(['PIPELINE_VERSION='+version,'IMAGE_NAME='+config.imageName,'CONTAINER_NAME='+config.containerName]) {
 					timestamps {
 						checkout()					
 						build()
@@ -60,6 +63,26 @@ def call(body) {
 
 def gitCommit = ''
 
+def getSharedFile(String name){
+	def file = libraryResource name
+	writeFile file: name, text: file
+}
+
+def prepareScripts(){
+	getSharedFile('build.ci.cleanup.sh')
+	getSharedFile('build.ci.integrationtests.cleanup.sh')
+	getSharedFile('build.ci.integrationtests.sh')
+	getSharedFile('build.ci.pushimg.sh')
+	getSharedFile('build.ci.sh')
+	getSharedFile('build.ci.unittests.cleanup.sh')
+	getSharedFile('build.ci.unittests.sh')
+	getSharedFile('docker-compose.build.yml')
+	getSharedFile('docker-compose.integrationtests.yml')
+	getSharedFile('docker-compose.unittests.yml')
+	getSharedFile('run-integration-tests.sh')
+	getSharedFile('run-unit-tests.sh')	
+}
+
 def checkout(){
 	stage('Checkout'){
 		deleteDir()
@@ -70,12 +93,11 @@ def checkout(){
 
 def build(){
 	buildStep('Build'){
-		currentBuild.displayName = '#'+env.PIPELINE_VERSION
 		try {
-			sh '''sh ./deploy/scripts/build.ci.sh;'''
+			sh '''sh build.ci.sh;'''
 		}
 		finally {
-			sh '''sh ./deploy/scripts/build.ci.cleanup.sh;'''						
+			sh '''sh build.ci.cleanup.sh;'''						
 		}
 	}
 }
@@ -83,11 +105,11 @@ def build(){
 def unitTests(){
 	buildStep('Unit Tests'){
 		try {
-			sh '''sh ./deploy/scripts/build.ci.unittests.sh;'''
+			sh '''sh build.ci.unittests.sh;'''
 			step([$class: 'MSTestPublisher', testResultsFile: '**/test/unit/**/*.trx', failOnError: true, keepLongStdio: true])
 		}
 		finally {
-			sh '''sh ./deploy/scripts/build.ci.unittests.cleanup.sh;'''		
+			sh '''sh build.ci.unittests.cleanup.sh;'''		
 		}
 	}
 }
@@ -98,16 +120,16 @@ def integrationTests(){
 			sshagent(['Toggling-It-Api']) {
 				sh '''BUILD_VERSION=${PIPELINE_VERSION};
 					export BUILD_VERSION;
-					sh ./deploy/scripts/build.ci.integrationtests.sh;
+					sh build.ci.integrationtests.sh;
 					exitCode=$?;
 					if [ $exitCode -eq 0 ]; then
 						echo "integration tests successful... pushing img to dockerhub...";
 						docker login -u ${DOCKER_USER_NAME} -p ${DOCKER_USER_PASSWORD};
-						sh ./deploy/scripts/build.ci.pushimg.sh;
+						sh build.ci.pushimg.sh;
 						exitCode=$?;
 						docker logout;
 					fi;
-					sh ./deploy/scripts/build.ci.integrationtests.cleanup.sh;
+					sh build.ci.integrationtests.cleanup.sh;
 					exit $exitCode;'''
 				
 				sh '''git tag -f ${PIPELINE_VERSION};

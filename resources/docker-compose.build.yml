@@ -1,0 +1,10 @@
+version: '2'
+
+services:
+  ci-build:
+    image: microsoft/aspnetcore-build:1.0-1.1
+    container_name: build
+    volumes:
+     - .:/src
+    working_dir: /src
+    command: /bin/bash -c "dotnet restore ${SLN_FILE} && dotnet publish ${SLN_FILE} -c Release -o ${OUTPUT_PATH}"

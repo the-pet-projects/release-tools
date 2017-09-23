@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  ci-integration-tests:
+    image: microsoft/dotnet:1.1.2-sdk
+    container_name: integrationtests
+    volumes:
+     - .:/src
+    working_dir: /src
+    env_file:
+     - integrationtestsparams.env
+    external_links:
+     - ${CONTAINER_NAME}
+    command: sh run-integration-tests.sh
