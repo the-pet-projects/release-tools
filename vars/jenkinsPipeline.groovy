@@ -19,7 +19,6 @@ def call(body) {
 			currentBuild.displayName = '#'+version
 			
 			deleteDir()
-			prepareScripts()
 			
 			if (env.BRANCH_NAME != 'master') {
 				if (isPRMergeBuild()) {
@@ -30,7 +29,8 @@ def call(body) {
 				}
 				withEnv(['PIPELINE_VERSION='+version,'IMAGE_NAME='+config.imageName,'CONTAINER_NAME='+config.containerName,'OUTPUT_PATH=build']) {
 					timestamps {
-						checkout()					
+						checkout()
+						prepareScripts()
 						build()
 						unitTests()
 						integrationTests()
@@ -45,7 +45,8 @@ def call(body) {
 				version = latestVersionPrefix + version
 				withEnv(['PIPELINE_VERSION='+version,'IMAGE_NAME='+config.imageName,'CONTAINER_NAME='+config.containerName,'OUTPUT_PATH=build']) {
 					timestamps {
-						checkout()					
+						checkout()
+						prepareScripts()			
 						build()
 						unitTests()
 						integrationTests()					
