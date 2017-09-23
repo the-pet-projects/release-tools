@@ -55,7 +55,6 @@ def call(body) {
 		}
 		catch (err) {
 			currentBuild.result = "FAILURE"
-			cleanWs()
 			throw err
 		}
 	}
