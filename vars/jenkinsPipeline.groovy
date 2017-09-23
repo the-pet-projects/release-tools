@@ -64,6 +64,7 @@ def gitCommit = ''
 
 def getSharedFile(String name){
 	def file = libraryResource name
+	sh 'echo ' + file
 	writeFile file: name, text: file
 }
 
