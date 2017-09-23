@@ -3,6 +3,7 @@ version: '2'
 services:
   ci-integration-tests:
     image: microsoft/dotnet:1.1.2-sdk
+    network_mode: bridge
     container_name: integrationtests
     volumes:
      - .:/src
