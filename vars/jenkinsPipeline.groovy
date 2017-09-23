@@ -27,7 +27,7 @@ def call(body) {
 				else {
 					version = featureVersionPrefix + version + '-alpha'
 				}
-				withEnv(['PIPELINE_VERSION='+version,'IMAGE_NAME='+config.imageName,'CONTAINER_NAME='+config.containerName,'OUTPUT_PATH=build']) {
+				withEnv(['PIPELINE_VERSION='+version,'IMAGE_NAME='+config.imageName,'CONTAINER_NAME='+config.containerName,'OUTPUT_PATH=build','SLN_FILE='+config.slnFile]) {
 					timestamps {
 						checkout()
 						prepareScripts()
@@ -43,7 +43,7 @@ def call(body) {
 			} // master branch / production
 			else {
 				version = latestVersionPrefix + version
-				withEnv(['PIPELINE_VERSION='+version,'IMAGE_NAME='+config.imageName,'CONTAINER_NAME='+config.containerName,'OUTPUT_PATH=build']) {
+				withEnv(['PIPELINE_VERSION='+version,'IMAGE_NAME='+config.imageName,'CONTAINER_NAME='+config.containerName,'OUTPUT_PATH=build','SLN_FILE='+config.slnFile]) {
 					timestamps {
 						checkout()
 						prepareScripts()			
