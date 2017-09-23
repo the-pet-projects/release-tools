@@ -123,7 +123,8 @@ def integrationTests(){
 					try {						
 						sh '''docker-compose -f docker-compose.release.yml up -d'''
 							
-						sh '''sh build.ci.integrationtests.sh;'''
+						sh '''echo "containername=${CONTAINER_NAME}";
+							sh build.ci.integrationtests.sh;'''
 							
 						sh '''echo "integration tests successful... pushing img to dockerhub...";
 							docker login -u ${DOCKER_USER_NAME} -p ${DOCKER_USER_PASSWORD};
