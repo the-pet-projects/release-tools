@@ -2,7 +2,7 @@ version: '2'
 
 services:
   ci-build:
-    image: microsoft/aspnetcore-build:${DOTNET_VERSION}
+    image: microsoft/aspnetcore-build:${ASPNETCORE_VERSION}
     container_name: build
     volumes:
      - .:/src
