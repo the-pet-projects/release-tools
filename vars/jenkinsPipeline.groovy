@@ -26,7 +26,7 @@ def call(body) {
 				}
 				currentBuild.displayName = '#'+version			
 				deleteDir()
-				withEnv(['PIPELINE_VERSION='+version,'IMAGE_NAME='+config.imageName,'CONTAINER_NAME='+config.containerName,'OUTPUT_PATH=build','SLN_FILE='+config.slnFile]) {
+				withEnv(['PIPELINE_VERSION='+version,'IMAGE_NAME='+config.imageName,'CONTAINER_NAME='+config.containerName,'OUTPUT_PATH=build','SLN_FILE='+config.slnFile], 'DOTNET_VERSION='+config.dotnetVersion) {
 					timestamps {
 						checkout()
 						prepareScripts()
@@ -44,7 +44,7 @@ def call(body) {
 				version = latestVersionPrefix + version
 				currentBuild.displayName = '#'+version			
 				deleteDir()
-				withEnv(['PIPELINE_VERSION='+version,'IMAGE_NAME='+config.imageName,'CONTAINER_NAME='+config.containerName,'OUTPUT_PATH=build','SLN_FILE='+config.slnFile]) {
+				withEnv(['PIPELINE_VERSION='+version,'IMAGE_NAME='+config.imageName,'CONTAINER_NAME='+config.containerName,'OUTPUT_PATH=build','SLN_FILE='+config.slnFile], 'DOTNET_VERSION='+config.dotnetVersion) {
 					timestamps {
 						checkout()
 						prepareScripts()			
