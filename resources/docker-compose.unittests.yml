@@ -2,7 +2,7 @@ version: '2'
 
 services:
   ci-unit-tests:
-    image: microsoft/dotnet:1.1.2-sdk
+    image: microsoft/dotnet:${DOTNET_VERSION}
     container_name: unittests
     volumes:
      - .:/src
