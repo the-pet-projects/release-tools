@@ -26,7 +26,7 @@ def call(body) {
 				}
 				currentBuild.displayName = '#'+version			
 				deleteDir()
-				withEnv(['PIPELINE_VERSION='+version,'IMAGE_NAME='+config.imageName,'CONTAINER_NAME='+config.containerName,'OUTPUT_PATH=build','SLN_FILE='+config.slnFile]) {
+				withEnv(['PIPELINE_VERSION='+version,'IMAGE_NAME='+config.imageName,'CONTAINER_NAME='+config.containerName,'OUTPUT_PATH=build','SLN_FILE='+config.slnFile], 'ASPNETCORE_VERSION='+config.aspnetcoreVersion, 'DOTNET_SDK_VERSION='+config.dotnetSdkVersion) {
 					timestamps {
 						checkout()
 						prepareScripts()
@@ -44,7 +44,7 @@ def call(body) {
 				version = latestVersionPrefix + version
 				currentBuild.displayName = '#'+version			
 				deleteDir()
-				withEnv(['PIPELINE_VERSION='+version,'IMAGE_NAME='+config.imageName,'CONTAINER_NAME='+config.containerName,'OUTPUT_PATH=build','SLN_FILE='+config.slnFile]) {
+				withEnv(['PIPELINE_VERSION='+version,'IMAGE_NAME='+config.imageName,'CONTAINER_NAME='+config.containerName,'OUTPUT_PATH=build','SLN_FILE='+config.slnFile], 'ASPNETCORE_VERSION='+config.aspnetcoreVersion, 'DOTNET_SDK_VERSION='+config.dotnetSdkVersion) {
 					timestamps {
 						checkout()
 						prepareScripts()			
