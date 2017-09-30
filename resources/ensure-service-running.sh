@@ -28,7 +28,7 @@ if [ $SERVICES -eq 0 ]; then
     if [ $SERVICES_AFTER_CREATION -eq 1 ]; then
         echo "Service is Created - ${IMAGE_NAME}"
     else
-        echo "SERVICES VALUE Should be 0. Actual Value = $SERVICES_AFTER_CREATION";
+        echo "SERVICES_AFTER_CREATION VALUE Should be 0. Actual Value = $SERVICES_AFTER_CREATION";
         echo "Service is NOT Created - ${IMAGE_NAME}"
     fi
 fi
