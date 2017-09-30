@@ -148,25 +148,17 @@ def integrationTests(){
 }
 
 def ensureServiceIsRunning(String imageName){
-	buildStep('Ensure Service is Running'){
-		withCredentials([usernamePassword(credentialsId: 'sshrenatorenabee', passwordVariable: 'SSH_USER_PASSWORD', usernameVariable: 'SSH_USER_NAME')]) {
-			sh '''echo "Ensuring Service is Running - {imageName};'''
-			sh '''sh ensure-service-running.sh;'''
-		}
-	}
+	sh '''echo "Ensuring Service is Running - {imageName};'''
+	sh '''sh ensure-service-running.sh;'''
 }
 
 def updateRunningService(String imageName){
-	buildStep('Update Service'){
-		withCredentials([usernamePassword(credentialsId: 'sshrenatorenabee', passwordVariable: 'SSH_USER_PASSWORD', usernameVariable: 'SSH_USER_NAME')]) {
-			sh '''echo "Updating Service - {imageName};'''
-			executeSshCommand(env.SSH_USER_NAME, env.SSH_USER_PASSWORD, "docker service update --image petprojects/${imageName}:${env.PIPELINE_VERSION} ${imageName}")
-		}
-	}
+	sh '''echo "Updating Service - {imageName};'''
+	executeSshCommand(env.SSH_USER_NAME, env.SSH_USER_PASSWORD, "docker service update --image petprojects/${imageName}:${env.PIPELINE_VERSION} ${imageName}")
 }
 
 def deploy(String imageName){
-	stage('Deploy'){
+	buildStep('Deploy'){
 		withCredentials([usernamePassword(credentialsId: 'sshrenatorenabee', passwordVariable: 'SSH_USER_PASSWORD', usernameVariable: 'SSH_USER_NAME')]) {
 			ensureServiceIsRunning(imageName)
 			updateRunningService(imageName)
