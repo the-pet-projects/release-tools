@@ -1,6 +1,6 @@
 #Ensure service is running
 echo "Check service is running - ${IMAGE_NAME}";
-SERVICES=$(docker service ls --f name=${IMAGE_NAME} --quiet | wc -l);
+SERVICES=$(docker service ls -f name=${IMAGE_NAME} --quiet | wc -l);
 echo "Service count - $SERVICES";
 if [[ "$SERVICES" -eq 0]]; then
     docker service create \
