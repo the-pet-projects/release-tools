@@ -145,10 +145,50 @@ def integrationTests(){
 	}
 }
 
+def ensureServiceIsRunning(String imageName){
+	buildStep('Ensure Service is Running'){
+		withCredentials([usernamePassword(credentialsId: 'sshrenatorenabee', passwordVariable: 'SSH_USER_PASSWORD', usernameVariable: 'SSH_USER_NAME')]) {
+			try{
+				sh '''echo "Ensuring Service is Running - {imageName};'''
+				executeSshCommand(env.SSH_USER_NAME, env.SSH_USER_PASSWORD, "SERVICES=$(docker service ls --filter name=${imageName} --quiet | wc -l)
+					if [[ "$SERVICES" -eq 0]]; then
+						docker service create \
+							--name ${imageName} \
+							--restart-condition any \
+							--restart-delay 5s \
+							--update-delay 10s \
+							--update-parallelism 1 \
+							${imageName}
+					fi;")
+
+			}catch(Exception e) {
+				setBuildStatus(context, e.toString().take(140), "FAILURE");
+				throw e
+			}
+		}
+	}
+}
+
+def updateRunningService(String imageName){
+	buildStep('Update Service'){
+		withCredentials([usernamePassword(credentialsId: 'sshrenatorenabee', passwordVariable: 'SSH_USER_PASSWORD', usernameVariable: 'SSH_USER_NAME')]) {
+			try{
+				sh '''echo "Updating Service - {imageName};'''
+				executeSshCommand(env.SSH_USER_NAME, env.SSH_USER_PASSWORD, "docker service update --image petprojects/${imageName}:${env.PIPELINE_VERSION} ${imageName}")
+
+			}catch(Exception e) {
+				setBuildStatus(context, e.toString().take(140), "FAILURE");
+				throw e
+			}
+		}
+	}
+}
+
 def deploy(String imageName){
 	stage('Deploy'){
 		withCredentials([usernamePassword(credentialsId: 'sshrenatorenabee', passwordVariable: 'SSH_USER_PASSWORD', usernameVariable: 'SSH_USER_NAME')]) {
-			executeSshCommand(env.SSH_USER_NAME, env.SSH_USER_PASSWORD, "docker service update -d=false --image petprojects/${imageName}:${env.PIPELINE_VERSION} ${imageName}")
+			ensureServiceIsRunning(imageName)
+			updateRunningService(imageName)
 		}
 	}
 }
