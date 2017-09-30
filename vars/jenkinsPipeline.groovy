@@ -154,7 +154,6 @@ def ensureServiceIsRunning(String imageName){
 					if [[ "$SERVICES" -eq 0]]; then
 						docker service create \
 							--name ${imageName} \
-							--network ${NETWORK} \
 							--restart-condition any \
 							--restart-delay 5s \
 							--update-delay 10s \
