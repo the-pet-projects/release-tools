@@ -11,12 +11,12 @@ if [ $(docker service ls -f name=${IMAGE_NAME} --quiet | wc -l) -eq 0 ]; then
     echo "Creating Service - ${IMAGE_NAME}";
 
     docker service create \
-        --name petprojects/${IMAGE_NAME}:${PIPELINE_VERSION} \
+        --name $(petprojects/${IMAGE_NAME}:${PIPELINE_VERSION}) \
         --restart-condition any \
         --restart-delay 5s \
         --update-delay 10s \
         --update-parallelism 1 \
-        petprojects/${IMAGE_NAME}:${PIPELINE_VERSION}
+        $(petprojects/${IMAGE_NAME}:${PIPELINE_VERSION})
 
-    echo "SErvice is Created - ${IMAGE_NAME}"
+    echo "Service is Created - ${IMAGE_NAME}"
 fi
