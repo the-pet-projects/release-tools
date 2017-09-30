@@ -153,7 +153,7 @@ def ensureServiceIsRunning(String imageName){
 }
 
 def updateRunningService(String imageName){
-	sh '''echo "Updating Service - {imageName}";'''
+	sh '''echo "Updating Service - $IMAGE_NAME";'''
 	executeSshCommand(env.SSH_USER_NAME, env.SSH_USER_PASSWORD, "docker service update --image petprojects/${imageName}:${env.PIPELINE_VERSION} ${imageName}")
 }
 
