@@ -148,7 +148,7 @@ def integrationTests(){
 }
 
 def ensureServiceIsRunning(String imageName){
-	sh '''echo "Ensuring Service is Running - {imageName}";'''
+	sh '''echo "Ensuring Service is Running - ${IMAGE_NAME}";'''
 	sh '''sh ensure-service-running.sh;'''
 }
 
