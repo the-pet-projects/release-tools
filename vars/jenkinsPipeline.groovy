@@ -82,7 +82,8 @@ def prepareScripts(){
 	getSharedFile('docker-compose.integrationtests.yml')
 	getSharedFile('docker-compose.unittests.yml')
 	getSharedFile('run-integration-tests.sh')
-	getSharedFile('run-unit-tests.sh')	
+	getSharedFile('ensure-service-running.sh')
+	getSharedFile('update-service.sh')
 }
 
 def checkout(){
@@ -150,16 +151,7 @@ def ensureServiceIsRunning(String imageName){
 		withCredentials([usernamePassword(credentialsId: 'sshrenatorenabee', passwordVariable: 'SSH_USER_PASSWORD', usernameVariable: 'SSH_USER_NAME')]) {
 			try{
 				sh '''echo "Ensuring Service is Running - {imageName};'''
-				executeSshCommand(env.SSH_USER_NAME, env.SSH_USER_PASSWORD, "SERVICES=$(docker service ls --filter name=${imageName} --quiet | wc -l)
-					if [[ "$SERVICES" -eq 0]]; then
-						docker service create \
-							--name ${imageName} \
-							--restart-condition any \
-							--restart-delay 5s \
-							--update-delay 10s \
-							--update-parallelism 1 \
-							${imageName}
-					fi;")
+				sh '''sh ensure-service-running.sh;'''
 
 			}catch(Exception e) {
 				setBuildStatus(context, e.toString().take(140), "FAILURE");
