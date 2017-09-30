@@ -20,7 +20,7 @@ if [ $(docker service ls -f name=$SERVICE_NAME --quiet | wc -l) -eq 0 ]; then
         --restart-delay 5s \
         --update-delay 10s \
         --update-parallelism 1 \
-        $SERVICE_NAME
+        $CONTAINER_NAME
 
     echo "Service is Created - $SERVICE_NAME"
 fi
