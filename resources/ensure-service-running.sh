@@ -18,7 +18,7 @@ if [ $SERVICES -eq 0 ]; then
 
     docker service create \
         --name $IMAGE_NAME \
-        --replicas 3
+        --replicas 3 \
         --restart-condition any \
         --restart-delay 5s \
         --update-delay 10s \
