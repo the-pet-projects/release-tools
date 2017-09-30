@@ -18,17 +18,18 @@ if [ $SERVICES -eq 0 ]; then
 
     docker service create \
         --name $IMAGE_NAME \
+        -- replicas=3
         --restart-condition any \
         --restart-delay 5s \
         --update-delay 10s \
         --update-parallelism 1 \
-        $IMAGE_NAME_WITH_VERSION
+        $SERVICE_NAME:${PIPELINE_VERSION}
 
     SERVICES_AFTER_CREATION=$(docker service ls -f name=${IMAGE_NAME} --quiet | wc -l)
     if [ $SERVICES_AFTER_CREATION -eq 1 ]; then
         echo "Service is Created - ${IMAGE_NAME}"
     else
-        echo "SERVICES_AFTER_CREATION VALUE Should be 0. Actual Value = $SERVICES_AFTER_CREATION";
+        echo "SERVICES_AFTER_CREATION VALUE Should be 1. Actual Value = $SERVICES_AFTER_CREATION";
         echo "Service is NOT Created - ${IMAGE_NAME}"
     fi
 fi
