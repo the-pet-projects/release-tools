@@ -1,7 +1,6 @@
-#!/bin/bash
-
 #Ensure service is running
-SERVICES=$(docker service ls --filter name=${IMAGE_NAME} --quiet | wc -l)
+echo "Check service is running - ${IMAGE_NAME}"
+SERVICES=$(docker service ls --f name=${IMAGE_NAME} --quiet | wc -l)
 if [[ "$SERVICES" -eq 0]]; then
     docker service create \
         --name ${IMAGE_NAME} \
