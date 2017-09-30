@@ -82,6 +82,7 @@ def prepareScripts(){
 	getSharedFile('docker-compose.integrationtests.yml')
 	getSharedFile('docker-compose.unittests.yml')
 	getSharedFile('run-integration-tests.sh')
+	getSharedFile('run-unit-tests.sh')
 	getSharedFile('ensure-service-running.sh')
 	getSharedFile('update-service.sh')
 }
