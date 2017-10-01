@@ -6,6 +6,11 @@ def call(body) {
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = config
     body()
+
+	def portsMap = [:]
+	portsMap['toggling-it'] = 50010
+	portsMap['micro-transactions-mgt-api'] = 50020
+	portsMap['micro-transactions-read-api'] = 50030
 	
     // now build, based on the configuration provided
     node {		
@@ -26,7 +31,7 @@ def call(body) {
 				}
 				currentBuild.displayName = '#'+version			
 				deleteDir()
-				withEnv(['PIPELINE_VERSION='+version,'IMAGE_NAME='+config.imageName,'CONTAINER_NAME='+config.containerName,'OUTPUT_PATH=build','SLN_FILE='+config.slnFile, 'ASPNETCORE_VERSION='+config.aspnetcoreVersion, 'DOTNET_SDK_VERSION='+config.dotnetSdkVersion]) {
+				withEnv(['PIPELINE_VERSION='+version,'IMAGE_NAME='+config.imageName,'CONTAINER_NAME='+config.containerName,'OUTPUT_PATH=build','SLN_FILE='+config.slnFile, 'ASPNETCORE_VERSION='+config.aspnetcoreVersion, 'DOTNET_SDK_VERSION='+config.dotnetSdkVersion, 'PORT='+portsMap[config.imageName]]) {
 					timestamps {
 						checkout()
 						prepareScripts()
@@ -44,7 +49,7 @@ def call(body) {
 				version = latestVersionPrefix + version
 				currentBuild.displayName = '#'+version			
 				deleteDir()
-				withEnv(['PIPELINE_VERSION='+version,'IMAGE_NAME='+config.imageName,'CONTAINER_NAME='+config.containerName,'OUTPUT_PATH=build','SLN_FILE='+config.slnFile, 'ASPNETCORE_VERSION='+config.aspnetcoreVersion, 'DOTNET_SDK_VERSION='+config.dotnetSdkVersion]) {
+				withEnv(['PIPELINE_VERSION='+version,'IMAGE_NAME='+config.imageName,'CONTAINER_NAME='+config.containerName,'OUTPUT_PATH=build','SLN_FILE='+config.slnFile, 'ASPNETCORE_VERSION='+config.aspnetcoreVersion, 'DOTNET_SDK_VERSION='+config.dotnetSdkVersion, 'PORT='+portsMap[config.imageName]]) {
 					timestamps {
 						checkout()
 						prepareScripts()			

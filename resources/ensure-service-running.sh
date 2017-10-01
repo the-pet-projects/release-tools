@@ -23,6 +23,7 @@ if [ $SERVICES -eq 0 ]; then
         --restart-delay 5s \
         --update-delay 10s \
         --update-parallelism 1 \
+        --publish ${PORT}:80 \
         $SERVICE_NAME:${PIPELINE_VERSION}
 
     SERVICES_AFTER_CREATION=$(docker service ls -f name=${IMAGE_NAME} --quiet | wc -l)
