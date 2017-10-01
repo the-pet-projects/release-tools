@@ -14,6 +14,7 @@ if [ $SERVICES -eq 1 ]; then
         --restart-delay 5s \
         --update-delay 10s \
         --update-parallelism 1 \
+        --publish ${PORT}:80 \
         ${IMAGE_NAME}
 else
     echo "Service is NOT Created - ${IMAGE_NAME} thus WILL NOT BE UPDATED";
