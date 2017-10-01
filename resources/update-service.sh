@@ -4,7 +4,7 @@ SERVICE_IMAGE_TAG="petprojects/${IMAGE_NAME}:${PIPELINE_VERSION}";
 
 SERVICES=$(docker service ls -f name=${IMAGE_NAME} --quiet | wc -l)
 
-echo "SERVICES VALUE Should be 1. Actual Value = $SERVICES";
+echo "SERVICES VALUE Should be 1. Actual Value = $SERVICES | PORT : ${PORT}";
 
 # Update service
 if [ $SERVICES -eq 1 ]; then

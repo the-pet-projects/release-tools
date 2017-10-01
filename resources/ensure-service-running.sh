@@ -10,7 +10,7 @@ echo "Check service is running - $SERVICE_NAME";
 
 SERVICES=$(docker service ls -f name=${IMAGE_NAME} --quiet | wc -l)
 
-echo "SERVICES VALUE Should be 0. Actual Value = $SERVICES";
+echo "SERVICES VALUE Should be 0. Actual Value = $SERVICES | PORT : ${PORT}";
 
 if [ $SERVICES -eq 0 ]; then
 
