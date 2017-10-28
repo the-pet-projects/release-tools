@@ -38,10 +38,10 @@ def call(body) {
 						build()
 						unitTests()
 						integrationTests()
-						if (!isPRMergeBuild()) {
-							manualPromotion()
-							deploy(config.imageName)
-						}
+						//if (!isPRMergeBuild()) {
+						//	manualPromotion()
+						//	deploy(config.imageName)
+						//}
 					}
 				}
 			} // master branch / production
