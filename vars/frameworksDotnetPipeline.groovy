@@ -1,13 +1,12 @@
 // vars/frameworksDotnetPipeline.groovy
 	
-def common = new petprojects.common()
-	
 def call(body) {
     // evaluate the body block, and collect configuration into the object
     def config = [:]
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = config
     body()
+	common = new petprojects.common()
 	
     // now build, based on the configuration provided
     node {		

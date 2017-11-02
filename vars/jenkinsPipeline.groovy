@@ -1,6 +1,4 @@
 // vars/jenkinsPipeline.groovy
-	
-def common = new petprojects.common()
 
 def call(body) {
     // evaluate the body block, and collect configuration into the object
@@ -8,6 +6,7 @@ def call(body) {
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = config
     body()
+	common = new petprojects.common()
 
 	def portsMap = [:]
 	portsMap['toggling-it'] = 50010
