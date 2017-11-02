@@ -1,0 +1,10 @@
+version: '2'
+
+services:
+  ci-buildframeworks:
+    image: microsoft/dotnet:${DOTNET_SDK_VERSION}-sdk
+    container_name: buildframeworks
+    volumes:
+     - .:/src
+    working_dir: /src
+    command: /bin/bash -c "dotnet msbuild \"/t:Clean;Restore;Pack\" \"/p:Configuration=Release\" \"/p:IncludeSymbols=true\" \"/p:Version=${PIPELINE_VERSION}\" src/${SLN_FILE}"

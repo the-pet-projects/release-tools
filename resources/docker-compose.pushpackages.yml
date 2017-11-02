@@ -1,0 +1,10 @@
+version: '2'
+
+services:
+  ci-pushpackages:
+    image: microsoft/dotnet:${DOTNET_SDK_VERSION}-sdk
+    container_name: pushpackages
+    volumes:
+     - .:/src
+    working_dir: /src
+    command: sh push-packages.sh
