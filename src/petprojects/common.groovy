@@ -1,5 +1,7 @@
 // src/petprojects/common.groovy
 
+package petprojects;
+
 def executeSshCommand(String username, String password, String cmd) {
 	def sshCmd = "sshpass -p '${password}' ssh ${username}@10.0.1.5 -o StrictHostKeyChecking=no '${cmd}'"
 	sh sshCmd
