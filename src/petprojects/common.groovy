@@ -89,7 +89,6 @@ void setBuildStatus(String context, String message, String state) {
 		commitShaSource: [$class: 'ManuallyEnteredShaSource', sha: gitCommit],
 		reposSource: [$class: "ManuallyEnteredRepositorySource", url: gitRepoUrl()],
 		contextSource: [$class: "ManuallyEnteredCommitContextSource", context: context],
-		errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "UNSTABLE"]],
 		statusResultSource: [ $class: "ConditionalStatusResultSource", results: [[$class: "AnyBuildResult", message: message, state: state]] ]
 	]);
 }

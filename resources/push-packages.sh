@@ -1,5 +1,5 @@
 failureCode=0
-for line in $(find -name '*.nupkg' | grep -G '^((?!\.symbols\.nupkg).)*$'); 
+for line in $(find -name '*.nupkg' | grep -P '^((?!\.symbols\.nupkg).)*$'); 
 do 
 	dotnet nuget push $line -k "${NUGET_API_KEY}" -sk "${NUGET_API_KEY}" -s "https://www.nuget.org/api/v2/package" -ss "https://nuget.smbsrc.net/"
 	lastExitCode=$?;
