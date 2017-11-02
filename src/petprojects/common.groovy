@@ -40,7 +40,7 @@ def prepareScripts(){
 	getSharedFile('docker-compose.pushpackages.yml')
 	getSharedFile('run-integration-tests.sh')
 	getSharedFile('run-unit-tests.sh')
-	getSharedFile('pushpackages.sh')
+	getSharedFile('push-packages.sh')
 	getSharedFile('ensure-service-running.sh')
 	getSharedFile('update-service.sh')
 }
