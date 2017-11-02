@@ -6,6 +6,7 @@ def call(body) {
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = config
     body()
+	def common = new petprojects.common()
 
 	def portsMap = [:]
 	portsMap['toggling-it'] = 50010
@@ -23,7 +24,7 @@ def call(body) {
 			def version = VersionNumber(versionNumberString: '.${BUILD_DATE_FORMATTED,\"yy\"}${BUILD_MONTH, XX}.${BUILDS_THIS_MONTH}')
 			
 			if (env.BRANCH_NAME != 'master') {
-				if (isPRMergeBuild()) {
+				if (common.isPRMergeBuild()) {
 					version = latestVersionPrefix + version + '-beta'
 				}
 				else {
@@ -33,10 +34,10 @@ def call(body) {
 				deleteDir()
 				withEnv(['PIPELINE_VERSION='+version,'IMAGE_NAME='+config.imageName,'CONTAINER_NAME='+config.containerName,'OUTPUT_PATH=build','SLN_FILE='+config.slnFile, 'ASPNETCORE_VERSION='+config.aspnetcoreVersion, 'DOTNET_SDK_VERSION='+config.dotnetSdkVersion, 'PORT='+portsMap[config.imageName]]) {
 					timestamps {
-						checkout()
-						prepareScripts()
+						common.checkout()
+						common.prepareScripts()
 						buildAspNetCore()
-						unitTests()
+						common.unitTests()
 						integrationTests()
 						//if (!isPRMergeBuild()) {
 						//	manualPromotion()
@@ -51,10 +52,10 @@ def call(body) {
 				deleteDir()
 				withEnv(['PIPELINE_VERSION='+version,'IMAGE_NAME='+config.imageName,'CONTAINER_NAME='+config.containerName,'OUTPUT_PATH=build','SLN_FILE='+config.slnFile, 'ASPNETCORE_VERSION='+config.aspnetcoreVersion, 'DOTNET_SDK_VERSION='+config.dotnetSdkVersion, 'PORT='+portsMap[config.imageName]]) {
 					timestamps {
-						checkout()
-						prepareScripts()			
+						common.checkout()
+						common.prepareScripts()			
 						buildAspNetCore()
-						unitTests()
+						common.unitTests()
 						integrationTests()					
 						deploy(config.imageName)
 					}
@@ -69,7 +70,7 @@ def call(body) {
 }
 
 def buildAspNetCore(){
-	buildStep('Build'){
+	common.buildStep('Build'){
 		try {
 			sh '''sh build.ci.sh;'''
 		}
@@ -79,15 +80,8 @@ def buildAspNetCore(){
 	}
 }
 
-def checkout(){
-	stage('Checkout'){
-		checkout scm
-		gitCommit = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%H'").trim()
-	}
-}
-
 def integrationTests(){
-	buildStep('Integration Tests'){
+	common.buildStep('Integration Tests'){
 		withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'DOCKER_USER_PASSWORD', usernameVariable: 'DOCKER_USER_NAME')]) {
 			withEnv(['BUILD_VERSION='+env.PIPELINE_VERSION]) {
 				sshagent(['Toggling-It-Api']) {
@@ -127,16 +121,12 @@ def updateRunningService(String imageName){
 }
 
 def deploy(String imageName){
-	buildStep('Deploy'){
+	common.buildStep('Deploy'){
 		withCredentials([usernamePassword(credentialsId: 'sshrenatorenabee', passwordVariable: 'SSH_USER_PASSWORD', usernameVariable: 'SSH_USER_NAME')]) {
 			ensureServiceIsRunning(imageName)
 			updateRunningService(imageName)
 		}
 	}
-}
-
-def isPRMergeBuild() {
-    return (env.BRANCH_NAME ==~ /^PR-\d+$/)
 }
 
 def manualPromotion() {

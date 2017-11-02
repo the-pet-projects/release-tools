@@ -6,6 +6,7 @@ def call(body) {
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = config
     body()
+	def common = new petprojects.common()
 	
     // now build, based on the configuration provided
     node {		
@@ -18,7 +19,7 @@ def call(body) {
 			def version = VersionNumber(versionNumberString: '.${BUILD_DATE_FORMATTED,\"yy\"}${BUILD_MONTH, XX}.${BUILDS_THIS_MONTH}')
 			
 			if (env.BRANCH_NAME != 'master') {
-				if (isPRMergeBuild()) {
+				if (common.isPRMergeBuild()) {
 					version = latestVersionPrefix + version + '-beta'
 				}
 				else {
@@ -33,10 +34,10 @@ def call(body) {
 			deleteDir()
 			withEnv(['PIPELINE_VERSION='+version, 'SLN_FILE='+config.slnFile, 'DOTNET_SDK_VERSION='+config.dotnetSdkVersion]) {
 				timestamps {
-					checkout()
-					prepareScripts()
+					common.checkout()
+					common.prepareScripts()
 					buildFramework()
-					unitTests()
+					common.unitTests()
 					pushPackages()
 				}
 			}
@@ -48,15 +49,8 @@ def call(body) {
 	}
 }
 
-def checkout(){
-	stage('Checkout'){
-		checkout scm
-		gitCommit = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%H'").trim()
-	}
-}
-
 def pushPackages(){
-	buildStep('Unit Tests'){
+	common.buildStep('Unit Tests'){
 		try {
 			sh '''sh build.ci.pushpackages.sh;'''
 		}
@@ -67,7 +61,7 @@ def pushPackages(){
 }
 
 def buildFramework(){
-	buildStep('Build'){
+	common.buildStep('Build'){
 		try {
 			sh '''sh build.ci.frameworksdotnet.sh;'''
 		}

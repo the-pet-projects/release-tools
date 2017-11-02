@@ -1,4 +1,4 @@
-// vars/common.groovy
+// src/petprojects/common.groovy
 
 def executeSshCommand(String username, String password, String cmd) {
 	def sshCmd = "sshpass -p '${password}' ssh ${username}@10.0.1.5 -o StrictHostKeyChecking=no '${cmd}'"
@@ -6,6 +6,13 @@ def executeSshCommand(String username, String password, String cmd) {
 }
 
 def gitCommit = ''
+
+def checkout(){
+	stage('Checkout'){
+		checkout scm
+		gitCommit = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%H'").trim()
+	}
+}
 
 def getSharedFile(String name){
 	def file = libraryResource name
