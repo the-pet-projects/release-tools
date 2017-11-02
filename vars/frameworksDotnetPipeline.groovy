@@ -52,7 +52,9 @@ def call(body) {
 def pushPackages(){
 	common.buildStep('Unit Tests'){
 		try {
-			sh '''sh build.ci.pushpackages.sh;'''
+			withCredentials([string(credentialsId: 'nugetorg-api-key', variable: 'NUGET_API_KEY')]) {
+				sh '''sh build.ci.pushpackages.sh;'''
+			}
 		}
 		finally {
 			sh '''sh build.ci.pushpackages.cleanup.sh;'''		
