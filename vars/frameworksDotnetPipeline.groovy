@@ -14,7 +14,7 @@ def call(body) {
 			currentBuild.result = "SUCCESS"
 			
 			def latestVersionPrefix = config.releaseVersion
-			def featureVersionPrefix = '0.1.0'		
+			def featureVersionPrefix = '0.1'		
 					
 			def version = VersionNumber(versionNumberString: '.${BUILD_DATE_FORMATTED,\"yy\"}${BUILD_MONTH, XX}.${BUILDS_THIS_MONTH}')
 			
