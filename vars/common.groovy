@@ -36,13 +36,6 @@ def prepareScripts(){
 	getSharedFile('update-service.sh')
 }
 
-def checkout(){
-	stage('Checkout'){
-		checkout scm
-		gitCommit = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%H'").trim()
-	}
-}
-
 def isPRMergeBuild() {
     return (env.BRANCH_NAME ==~ /^PR-\d+$/)
 }

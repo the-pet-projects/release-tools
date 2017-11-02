@@ -48,6 +48,13 @@ def call(body) {
 	}
 }
 
+def checkout(){
+	stage('Checkout'){
+		checkout scm
+		gitCommit = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%H'").trim()
+	}
+}
+
 def pushPackages(){
 	buildStep('Unit Tests'){
 		try {

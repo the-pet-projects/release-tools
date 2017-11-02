@@ -79,6 +79,13 @@ def buildAspNetCore(){
 	}
 }
 
+def checkout(){
+	stage('Checkout'){
+		checkout scm
+		gitCommit = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%H'").trim()
+	}
+}
+
 def integrationTests(){
 	buildStep('Integration Tests'){
 		withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'DOCKER_USER_PASSWORD', usernameVariable: 'DOCKER_USER_NAME')]) {
