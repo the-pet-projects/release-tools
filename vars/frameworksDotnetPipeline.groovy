@@ -16,7 +16,7 @@ def call(body) {
 			def latestVersionPrefix = config.releaseVersion
 			def featureVersionPrefix = '0.1'		
 					
-			def version = VersionNumber(versionNumberString: '.${BUILD_DATE_FORMATTED,\"yy\"}${BUILD_MONTH, XX}.${BUILDS_THIS_MONTH}')
+			def version = VersionNumber(versionNumberString: '.${BUILD_DATE_FORMATTED,\"yyMMdd\"}.${BUILD_DATE_FORMATTED,\"HHmmss\"}')
 			
 			if (env.BRANCH_NAME != 'master') {
 				if (common.isPRMergeBuild()) {
