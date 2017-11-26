@@ -38,11 +38,9 @@ def call(body) {
 						common.prepareScripts()
 						buildAspNetCore()
 						common.unitTests()
-						integrationTests()
-						//if (!isPRMergeBuild()) {
-						//	manualPromotion()
-						//	deploy(config.imageName)
-						//}
+						withEnv(['CONSUL_ADDRESS=http://consul01-petprojects.westeurope.cloudapp.azure.com:8500', 'CONSUL_ENVIRONMENT=CI']) {
+							integrationTests()
+						}
 					}
 				}
 			} // master branch / production
@@ -56,8 +54,12 @@ def call(body) {
 						common.prepareScripts()			
 						buildAspNetCore()
 						common.unitTests()
-						integrationTests()					
-						deploy(config.imageName)
+						withEnv(['CONSUL_ADDRESS=http://consul01-petprojects.westeurope.cloudapp.azure.com:8500', 'CONSUL_ENVIRONMENT=CI']) {
+							integrationTests()
+						}
+						withEnv(['CONSUL_ADDRESS=http://consul01-petprojects.westeurope.cloudapp.azure.com:8500', 'CONSUL_ENVIRONMENT=Production']) {
+							deploy(config.imageName)
+						}						
 					}
 				}
 			}

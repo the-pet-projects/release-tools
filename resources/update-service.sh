@@ -14,6 +14,8 @@ if [ $SERVICES -eq 1 ]; then
         --restart-delay 5s \
         --update-delay 10s \
         --update-parallelism 1 \
+		--env-add CONSUL_ENVIRONMENT=${CONSUL_ENVIRONMENT} \
+		--env-add CONSUL_ADDRESS=${CONSUL_ADDRESS} \
         ${IMAGE_NAME}
 else
     echo "Service is NOT Created - ${IMAGE_NAME} thus WILL NOT BE UPDATED";
