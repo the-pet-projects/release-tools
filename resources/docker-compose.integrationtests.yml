@@ -15,4 +15,4 @@ services:
      - integrationtestsparams.env
     external_links:
      - ${CONTAINER_NAME}
-    command: chmod +x run-integration-tests.sh ; ./run-integration-tests.sh
+    command: ./run-integration-tests.sh
