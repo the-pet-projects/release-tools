@@ -1,7 +1,8 @@
 #!/bin/bash
 
+printenv
 failureCode=0
-asd=MTS_APP_SETTINGS_ConsulClientConfiguration:Address
+asd=$(MTS_APP_SETTINGS_ConsulClientConfiguration:Address)
 echo "consuladdr=$(MTS_APP_SETTINGS_ConsulClientConfiguration\:Address)";
 echo "consuladdr=$(MTS_APP_SETTINGS_ConsulClientConfiguration:Address)";
 echo '''consuladdr=$(MTS_APP_SETTINGS_ConsulClientConfiguration:Address)''';
