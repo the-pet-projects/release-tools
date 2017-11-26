@@ -1,3 +1,5 @@
+#!/bin/bash
+
 failureCode=0
 echo "consuladdr=$(MTS_APP_SETTINGS_ConsulClientConfiguration:Address)";
 for line in $(find -name '*.csproj' | grep -G '^.\/test\/integration\/.*\.csproj'); 
