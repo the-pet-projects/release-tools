@@ -15,4 +15,4 @@ services:
      - integrationtestsparams.env
     external_links:
      - ${CONTAINER_NAME}
-    command: sh run-integration-tests.sh
+    command: source run-integration-tests.sh
