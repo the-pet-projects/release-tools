@@ -2,7 +2,7 @@ version: '2'
 
 services:
   ci-integration-tests:
-    image: microsoft/dotnet:${DOTNET_SDK_VERSION}-sdk
+    image: microsoft/dotnet:${DOTNET_SDK_VERSION}-sdk-jessie
     network_mode: bridge
     container_name: integrationtests
     volumes:
