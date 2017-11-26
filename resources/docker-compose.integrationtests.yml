@@ -9,8 +9,8 @@ services:
      - .:/src
     working_dir: /src
     environment:
-	 - 'MTS_APP_SETTINGS_ConsulStoreConfiguration:Environment=${CONSUL_ENVIRONMENT}'
-	 - 'MTS_APP_SETTINGS_ConsulClientConfiguration:Address=${CONSUL_ADDRESS}'
+     - 'MTS_APP_SETTINGS_ConsulStoreConfiguration:Environment=${CONSUL_ENVIRONMENT}'
+     - 'MTS_APP_SETTINGS_ConsulClientConfiguration:Address=${CONSUL_ADDRESS}'
     env_file:
      - integrationtestsparams.env
     external_links:
