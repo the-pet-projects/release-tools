@@ -12,9 +12,9 @@ PIPELINE_VERSION=$3
 CONSUL_ENVIRONMENT: $4
 CONSUL_ADDRESS: $5
 
-SERVICE_IMAGE_TAG="petprojects/${IMAGE_NAME}:${PIPELINE_VERSION}";
+SERVICE_IMAGE_TAG="petprojects/$IMAGE_NAME:$PIPELINE_VERSION";
 
-SERVICES=$(docker service ls -f name=${IMAGE_NAME} --quiet | wc -l)
+SERVICES=$(docker service ls -f name=$IMAGE_NAME --quiet | wc -l)
 
 echo "SERVICES VALUE Should be 1. Actual Value = $SERVICES";
 
@@ -28,9 +28,9 @@ if [ $SERVICES -eq 1 ]; then
         --restart-delay 5s \
         --update-delay 10s \
         --update-parallelism 1 \
-		--env-add MTS_APP_SETTINGS_ConsulStoreConfiguration:Environment=${CONSUL_ENVIRONMENT} \
-		--env-add MTS_APP_SETTINGS_ConsulClientConfiguration:Address=${CONSUL_ADDRESS} \
-        ${IMAGE_NAME}
+		--env-add MTS_APP_SETTINGS_ConsulStoreConfiguration:Environment=$CONSUL_ENVIRONMENT \
+		--env-add MTS_APP_SETTINGS_ConsulClientConfiguration:Address=$CONSUL_ADDRESS \
+        $IMAGE_NAME
 		
 	lastExitCode=$?;
 	echo "lastexitcode=$lastExitCode";
@@ -40,7 +40,7 @@ if [ $SERVICES -eq 1 ]; then
 	fi;
 else
 	failureCode=-1
-    echo "Error: Service is NOT Created - ${IMAGE_NAME} thus WILL NOT BE UPDATED";
+    echo "Error: Service is NOT Created - $IMAGE_NAME thus WILL NOT BE UPDATED";
 fi;
 
 if [ $failureCode != 0 ] ; then
