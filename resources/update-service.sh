@@ -1,5 +1,17 @@
 #!/bin/bash
 
+echo "IMAGE_NAME: $1"
+echo "PORT: $2"
+echo "PIPELINE_VERSION: $3"
+echo "CONSUL_ENVIRONMENT: $4"
+echo "CONSUL_ADDRESS: $5"
+
+IMAGE_NAME=$1
+PORT=$2
+PIPELINE_VERSION=$3
+CONSUL_ENVIRONMENT: $4
+CONSUL_ADDRESS: $5
+
 SERVICE_IMAGE_TAG="petprojects/${IMAGE_NAME}:${PIPELINE_VERSION}";
 
 SERVICES=$(docker service ls -f name=${IMAGE_NAME} --quiet | wc -l)

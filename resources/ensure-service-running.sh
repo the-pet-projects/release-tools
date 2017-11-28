@@ -2,6 +2,18 @@
 
 #Ensure service is running
 
+echo "IMAGE_NAME: $1"
+echo "PORT: $2"
+echo "PIPELINE_VERSION: $3"
+echo "CONSUL_ENVIRONMENT: $4"
+echo "CONSUL_ADDRESS: $5"
+
+IMAGE_NAME=$1
+PORT=$2
+PIPELINE_VERSION=$3
+CONSUL_ENVIRONMENT: $4
+CONSUL_ADDRESS: $5
+
 SERVICE_NAME="petprojects/${IMAGE_NAME}";
 
 IMAGE_NAME_WITH_VERSION="$SERVICE:${PIPELINE_VERSION}";
@@ -26,6 +38,8 @@ if [ $SERVICES -eq 0 ]; then
 			--restart-delay 5s \
 			--update-delay 10s \
 			--update-parallelism 1 \
+			--env-add MTS_APP_SETTINGS_ConsulStoreConfiguration:Environment=${CONSUL_ENVIRONMENT} \
+			--env-add MTS_APP_SETTINGS_ConsulClientConfiguration:Address=${CONSUL_ADDRESS} \
 			$SERVICE_NAME:${PIPELINE_VERSION};
 		lastExitCode=$?;
 	else
@@ -37,6 +51,8 @@ if [ $SERVICES -eq 0 ]; then
 			--update-delay 10s \
 			--update-parallelism 1 \
 			--publish ${PORT}:80 \
+			--env-add MTS_APP_SETTINGS_ConsulStoreConfiguration:Environment=${CONSUL_ENVIRONMENT} \
+			--env-add MTS_APP_SETTINGS_ConsulClientConfiguration:Address=${CONSUL_ADDRESS} \
 			$SERVICE_NAME:${PIPELINE_VERSION};
 		lastExitCode=$?;
     fi;

@@ -117,7 +117,7 @@ def ensureServiceIsRunning(String imageName, String username, String password){
 	try {
 		common.copyFileToRemoteWithSsh(username, password, 'ensure-service-running.sh', "ensure-service-running-${randomUuid}.sh")
 		sh "echo \"Ensuring Service is Running - ${imageName}\""
-		common.executeSshCommand(username, password, "sh ensure-service-running-${randomUuid}.sh")
+		common.executeSshCommand(username, password, "sh ensure-service-running-${randomUuid}.sh \"${imageName}\" \"${env.PORT}\" \"${env.PIPELINE_VERSION}\" \"${env.CONSUL_ENVIRONMENT}\" \"${env.CONSUL_ADDRESS}\"")
 	} finally {
 		common.executeSshCommand(username, password, "rm ensure-service-running-${randomUuid}.sh")
 	}
@@ -128,7 +128,7 @@ def updateRunningService(String imageName, String username, String password){
 	try {
 		common.copyFileToRemoteWithSsh(username, password, 'update-service-running.sh', "update-service-running-${randomUuid}.sh")
 		sh "echo \"Updating Service - ${imageName}\""
-		common.executeSshCommand(username, password, "sh update-service-running-${randomUuid}.sh")
+		common.executeSshCommand(username, password, "sh update-service-running-${randomUuid}.sh \"${imageName}\" \"${env.PORT}\" \"${env.PIPELINE_VERSION}\" \"${env.CONSUL_ENVIRONMENT}\" \"${env.CONSUL_ADDRESS}\"")
 	} finally {
 		common.executeSshCommand(username, password, "rm update-service-running-${randomUuid}.sh")
 	}
