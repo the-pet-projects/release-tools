@@ -11,8 +11,8 @@ echo "CONSUL_ADDRESS: $5"
 IMAGE_NAME=$1
 PORT=$2
 PIPELINE_VERSION=$3
-CONSUL_ENVIRONMENT: $4
-CONSUL_ADDRESS: $5
+CONSUL_ENVIRONMENT=$4
+CONSUL_ADDRESS=$5
 
 SERVICE_NAME="petprojects/$IMAGE_NAME";
 
@@ -30,7 +30,7 @@ if [ $SERVICES -eq 0 ]; then
     echo "Creating Service - $IMAGE_NAME";    
 
 	lastExitCode=0
-	if [ -z "$PORT" ] ; then
+	if [ -z "$PORT" ] || ["$PORT" -eq "null"] ; then
 		docker service create \
 			--name $IMAGE_NAME \
 			--replicas 3 \
