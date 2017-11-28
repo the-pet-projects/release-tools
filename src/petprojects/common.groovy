@@ -3,13 +3,23 @@
 package petprojects;
 
 def executeSshCommand(String username, String password, String cmd) {
-	def sshCmd = "sshpass -p '${password}' ssh ${username}@10.0.1.5 -o StrictHostKeyChecking=no '${cmd}'"
-	sh sshCmd
+	try {
+		def sshCmd = "sshpass -p '${password}' ssh ${username}@10.0.1.5 -o StrictHostKeyChecking=no '${cmd}'"
+		sh sshCmd
+	} catch (Exception e) {
+		sh "echo ${e.toString()}";
+		throw e
+	}
 }
 
 def copyFileToRemoteWithSsh(String username, String password, String localPath, String remotePath) {
-	def sshCmd = "sshpass -p '${password}' ssh ${username}@10.0.1.5 -o StrictHostKeyChecking=no 'scp ${localPath} ${username}@10.0.1.5:${remotePath}'"
-	sh sshCmd
+	try {
+		def sshCmd = "sshpass -p '${password}' ssh ${username}@10.0.1.5 -o StrictHostKeyChecking=no 'scp ${localPath} ${username}@10.0.1.5:${remotePath}'"
+		sh sshCmd
+	} catch (Exception e) {
+		sh "echo ${e.toString()}";
+		throw e
+	}
 }
 
 def gitCommit = ''

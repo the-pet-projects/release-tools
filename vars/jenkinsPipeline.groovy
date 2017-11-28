@@ -115,7 +115,7 @@ def integrationTests(){
 def ensureServiceIsRunning(String imageName, String username, String password){
 	def randomUuid = UUID.randomUUID().toString()
 	try {
-		common.copyFileToRemoteWithSsh(username, password, 'ensure-service-running.sh', "ensure-service-running-$randomUuid.sh")
+		common.copyFileToRemoteWithSsh(username, password, 'ensure-service-running.sh', "ensure-service-running-${randomUuid}.sh")
 		sh "echo \"Ensuring Service is Running - ${imageName}\""
 		common.executeSshCommand(username, password, "sh ensure-service-running-${randomUuid}.sh")
 	} finally {
