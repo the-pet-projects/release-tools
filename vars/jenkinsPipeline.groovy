@@ -115,22 +115,22 @@ def integrationTests(){
 def ensureServiceIsRunning(String imageName, String username, String password){
 	def randomUuid = UUID.randomUUID().toString()
 	try {
-		common.copyFileToRemoteWithSsh(username, password, 'ensure-service-running.sh', 'ensure-service-running-${randomUuid}.sh')
-		sh '''echo "Ensuring Service is Running - ${IMAGE_NAME}";'''
-		common.executeSshCommand(username, password, 'sh ensure-service-running-${randomUuid}.sh')
+		common.copyFileToRemoteWithSsh(username, password, 'ensure-service-running.sh', "ensure-service-running-$randomUuid.sh")
+		sh "echo \"Ensuring Service is Running - ${imageName}\""
+		common.executeSshCommand(username, password, "sh ensure-service-running-${randomUuid}.sh")
 	} finally {
-		common.executeSshCommand(username, password, 'rm ensure-service-running-${randomUuid}.sh')
+		common.executeSshCommand(username, password, "rm ensure-service-running-${randomUuid}.sh")
 	}
 }
 
 def updateRunningService(String imageName, String username, String password){
 	def randomUuid = UUID.randomUUID().toString()
 	try {
-		common.copyFileToRemoteWithSsh(username, password, 'update-service-running.sh', 'update-service-running-${randomUuid}.sh')
-		sh '''echo "Updating Service - $IMAGE_NAME";'''
-		common.executeSshCommand(username, password, 'sh update-service-running-${randomUuid}.sh')
+		common.copyFileToRemoteWithSsh(username, password, 'update-service-running.sh', "update-service-running-${randomUuid}.sh")
+		sh "echo \"Updating Service - ${imageName}\""
+		common.executeSshCommand(username, password, "sh update-service-running-${randomUuid}.sh")
 	} finally {
-		common.executeSshCommand(username, password, 'rm update-service-running-${randomUuid}.sh')
+		common.executeSshCommand(username, password, "rm update-service-running-${randomUuid}.sh")
 	}
 }
 
