@@ -14,7 +14,7 @@ def executeSshCommand(String username, String password, String cmd) {
 
 def copyFileToRemoteWithSsh(String username, String password, String localPath, String remotePath) {
 	try {
-		def sshCmd = "sshpass -p '${password}' scp ${localPath} ${username}@10.0.1.5:${remotePath} -o StrictHostKeyChecking=no"
+		def sshCmd = "sshpass -p '${password}' scp -o StrictHostKeyChecking=no ${localPath} ${username}@10.0.1.5:${remotePath}"
 		sh sshCmd
 	} catch (Exception e) {
 		sh "echo ${e.toString()}";
