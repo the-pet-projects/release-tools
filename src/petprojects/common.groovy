@@ -7,6 +7,11 @@ def executeSshCommand(String username, String password, String cmd) {
 	sh sshCmd
 }
 
+def copyFileToRemoteWithSsh(String username, String password, String localPath, String remotePath) {
+	def sshCmd = "sshpass -p '${password}' ssh ${username}@10.0.1.5 -o StrictHostKeyChecking=no 'scp ${localPath} ${username}@10.0.1.5:${remotePath}'"
+	sh sshCmd
+}
+
 def gitCommit = ''
 
 def checkout(){

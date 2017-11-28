@@ -112,21 +112,33 @@ def integrationTests(){
 	}
 }
 
-def ensureServiceIsRunning(String imageName){
-	sh '''echo "Ensuring Service is Running - ${IMAGE_NAME}";'''
-	sh '''sh ensure-service-running.sh;'''
+def ensureServiceIsRunning(String imageName, String username, String password){
+	var randomUuid = UUID.randomUUID().toString()
+	try {
+		common.copyFileToRemoteWithSsh(username, password, 'ensure-service-running.sh', 'ensure-service-running-${randomUuid}.sh')
+		sh '''echo "Ensuring Service is Running - ${IMAGE_NAME}";'''
+		common.executeSshCommand(username, password, 'sh ensure-service-running-${randomUuid}.sh')
+	} finally {
+		common.executeSshCommand(username, password, 'rm ensure-service-running-${randomUuid}.sh')
+	}
 }
 
-def updateRunningService(String imageName){
-	sh '''echo "Updating Service - $IMAGE_NAME";'''
-	sh '''sh update-service.sh;'''
+def updateRunningService(String imageName, String username, String password){
+	var randomUuid = UUID.randomUUID().toString()
+	try {
+		common.copyFileToRemoteWithSsh(username, password, 'update-service-running.sh', 'update-service-running-${randomUuid}.sh')
+		sh '''echo "Updating Service - $IMAGE_NAME";'''
+		common.executeSshCommand(username, password, 'sh update-service-running-${randomUuid}.sh')
+	} finally {
+		common.executeSshCommand(username, password, 'rm update-service-running-${randomUuid}.sh')
+	}
 }
 
 def deploy(String imageName){
 	common.buildStep('Deploy'){
 		withCredentials([usernamePassword(credentialsId: 'sshrenatorenabee', passwordVariable: 'SSH_USER_PASSWORD', usernameVariable: 'SSH_USER_NAME')]) {
-			ensureServiceIsRunning(imageName)
-			updateRunningService(imageName)
+			ensureServiceIsRunning(imageName, env.SSH_USER_NAME, env.SSH_USER_PASSWORD)
+			updateRunningService(imageName, env.SSH_USER_NAME, env.SSH_USER_PASSWORD)
 		}
 	}
 }

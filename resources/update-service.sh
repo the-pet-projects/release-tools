@@ -6,6 +6,8 @@ SERVICES=$(docker service ls -f name=${IMAGE_NAME} --quiet | wc -l)
 
 echo "SERVICES VALUE Should be 1. Actual Value = $SERVICES";
 
+failureCode=0
+
 # Update service
 if [ $SERVICES -eq 1 ]; then
     docker service update \
@@ -17,6 +19,19 @@ if [ $SERVICES -eq 1 ]; then
 		--env-add MTS_APP_SETTINGS_ConsulStoreConfiguration:Environment=${CONSUL_ENVIRONMENT} \
 		--env-add MTS_APP_SETTINGS_ConsulClientConfiguration:Address=${CONSUL_ADDRESS} \
         ${IMAGE_NAME}
+		
+	lastExitCode=$?;
+	echo "lastexitcode=$lastExitCode";
+	if [ $lastExitCode != 0 ] ; then
+		echo "setting failurecode $lastExitCode";
+		failureCode=$lastExitCode;
+	fi;
 else
-    echo "Service is NOT Created - ${IMAGE_NAME} thus WILL NOT BE UPDATED";
-fi
+	failureCode=-1
+    echo "Error: Service is NOT Created - ${IMAGE_NAME} thus WILL NOT BE UPDATED";
+fi;
+
+if [ $failureCode != 0 ] ; then
+	echo "exiting with status code $failureCode";
+	exit $failureCode;
+fi;
