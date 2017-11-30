@@ -30,7 +30,7 @@ if [ $SERVICES -eq 0 ]; then
     echo "Creating Service - $IMAGE_NAME";    
 
 	lastExitCode=0
-	if [ -z "$PORT" ] || [ "$PORT" -eq "null" ] ; then
+	if [ -z "$PORT" ] || [ "$PORT" = "null" ] ; then
 		docker service create \
 			--name $IMAGE_NAME \
 			--replicas 3 \
