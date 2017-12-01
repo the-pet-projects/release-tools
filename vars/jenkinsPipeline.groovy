@@ -126,11 +126,11 @@ def ensureServiceIsRunning(String imageName, String username, String password){
 def updateRunningService(String imageName, String username, String password){
 	def randomUuid = UUID.randomUUID().toString()
 	try {
-		common.copyFileToRemoteWithSsh(username, password, 'update-service-running.sh', "update-service-running-${randomUuid}.sh")
+		common.copyFileToRemoteWithSsh(username, password, 'update-service.sh', "update-service-${randomUuid}.sh")
 		sh "echo \"Updating Service - ${imageName}\""
-		common.executeSshCommand(username, password, "sh update-service-running-${randomUuid}.sh \"${imageName}\" \"${env.PORT}\" \"${env.PIPELINE_VERSION}\" \"${env.CONSUL_ENVIRONMENT}\" \"${env.CONSUL_ADDRESS}\"")
+		common.executeSshCommand(username, password, "sh update-service-${randomUuid}.sh \"${imageName}\" \"${env.PORT}\" \"${env.PIPELINE_VERSION}\" \"${env.CONSUL_ENVIRONMENT}\" \"${env.CONSUL_ADDRESS}\"")
 	} finally {
-		common.executeSshCommand(username, password, "rm update-service-running-${randomUuid}.sh")
+		common.executeSshCommand(username, password, "rm update-service-${randomUuid}.sh")
 	}
 }
 
