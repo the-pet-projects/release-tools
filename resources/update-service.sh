@@ -17,6 +17,7 @@ failureCode=0
 # Update service
 if [ $SERVICES -eq 1 ]; then
     docker service update \
+		--detach=false \
         --image $SERVICE_IMAGE_TAG \
         --restart-condition any \
         --restart-delay 5s \

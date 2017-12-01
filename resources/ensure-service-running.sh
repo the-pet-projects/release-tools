@@ -26,6 +26,7 @@ if [ $SERVICES -eq 0 ]; then
 	lastExitCode=0
 	if [ -z "$PORT" ] || [ "$PORT" = "null" ] ; then
 		docker service create \
+			--detach=false \
 			--name $IMAGE_NAME \
 			--replicas 3 \
 			--restart-condition any \
@@ -38,6 +39,7 @@ if [ $SERVICES -eq 0 ]; then
 		lastExitCode=$?;
 	else
 		docker service create \
+			--detach=false \
 			--name $IMAGE_NAME \
 			--replicas 3 \
 			--restart-condition any \
