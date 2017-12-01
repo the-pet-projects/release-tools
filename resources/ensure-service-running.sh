@@ -38,8 +38,8 @@ if [ $SERVICES -eq 0 ]; then
 			--restart-delay 5s \
 			--update-delay 10s \
 			--update-parallelism 1 \
-			--env-add MTS_APP_SETTINGS_ConsulStoreConfiguration:Environment=$CONSUL_ENVIRONMENT \
-			--env-add MTS_APP_SETTINGS_ConsulClientConfiguration:Address=$CONSUL_ADDRESS \
+			--env MTS_APP_SETTINGS_ConsulStoreConfiguration:Environment=$CONSUL_ENVIRONMENT \
+			--env MTS_APP_SETTINGS_ConsulClientConfiguration:Address=$CONSUL_ADDRESS \
 			$SERVICE_NAME:$PIPELINE_VERSION;
 		lastExitCode=$?;
 	else
@@ -51,8 +51,8 @@ if [ $SERVICES -eq 0 ]; then
 			--update-delay 10s \
 			--update-parallelism 1 \
 			--publish $PORT:80 \
-			--env-add MTS_APP_SETTINGS_ConsulStoreConfiguration:Environment=$CONSUL_ENVIRONMENT \
-			--env-add MTS_APP_SETTINGS_ConsulClientConfiguration:Address=$CONSUL_ADDRESS \
+			--env MTS_APP_SETTINGS_ConsulStoreConfiguration:Environment=$CONSUL_ENVIRONMENT \
+			--env MTS_APP_SETTINGS_ConsulClientConfiguration:Address=$CONSUL_ADDRESS \
 			$SERVICE_NAME:$PIPELINE_VERSION;
 		lastExitCode=$?;
     fi;
