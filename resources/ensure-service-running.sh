@@ -2,12 +2,6 @@
 
 #Ensure service is running
 
-echo "IMAGE_NAME: $1"
-echo "PORT: $2"
-echo "PIPELINE_VERSION: $3"
-echo "CONSUL_ENVIRONMENT: $4"
-echo "CONSUL_ADDRESS: $5"
-
 IMAGE_NAME=$1
 PORT=$2
 PIPELINE_VERSION=$3
