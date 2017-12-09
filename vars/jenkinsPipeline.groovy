@@ -103,8 +103,8 @@ def integrationTests(){
 						
 						step([$class: 'MSTestPublisher', testResultsFile: '**/test/integration/**/*.trx', failOnError: true, keepLongStdio: true])
 						
-					} finally {				
-						sh '''sh build.ci.integrationtests.cleanup.sh;'''
+					} finally {
+						sh '''docker logs ${CONTAINER_NAME} ; sh build.ci.integrationtests.cleanup.sh;'''
 					}
 				}
 			}			
