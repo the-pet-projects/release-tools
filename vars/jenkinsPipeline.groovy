@@ -57,6 +57,7 @@ def call(body) {
 						withEnv(['CONSUL_ADDRESS=http://consul01-petprojects.westeurope.cloudapp.azure.com:8500', 'CONSUL_ENVIRONMENT=CI']) {
 							integrationTests()
 						}
+						common.tagCommit()
 						withEnv(['CONSUL_ADDRESS=http://consul01-petprojects.westeurope.cloudapp.azure.com:8500', 'CONSUL_ENVIRONMENT=Production']) {
 							deploy(config.imageName)
 						}						
@@ -96,10 +97,7 @@ def integrationTests(){
 						sh '''echo "integration tests successful... pushing img to dockerhub...";
 							docker login -u ${DOCKER_USER_NAME} -p ${DOCKER_USER_PASSWORD};
 							sh build.ci.pushimg.sh;						
-							docker logout;'''
-						
-						sh '''git tag -f ${PIPELINE_VERSION};
-							git push origin ${PIPELINE_VERSION};'''								
+							docker logout;'''						
 						
 						step([$class: 'MSTestPublisher', testResultsFile: '**/test/integration/**/*.trx', failOnError: true, keepLongStdio: true])
 						

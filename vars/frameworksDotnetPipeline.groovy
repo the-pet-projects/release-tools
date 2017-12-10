@@ -39,6 +39,7 @@ def call(body) {
 					buildFramework()
 					common.unitTests()
 					pushPackages()
+					common.tagCommit()
 				}
 			}
 		}

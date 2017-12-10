@@ -22,6 +22,11 @@ def copyFileToRemoteWithSsh(String username, String password, String localPath, 
 	}
 }
 
+def tagCommit(){
+	sh '''git tag -f ${PIPELINE_VERSION};
+		git push origin ${PIPELINE_VERSION};'''
+}
+
 def gitCommit = ''
 
 def checkout(){
