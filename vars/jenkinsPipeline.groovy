@@ -12,6 +12,7 @@ def call(body) {
 	portsMap['toggling-it'] = 50010
 	portsMap['micro-transactions-mgt-api'] = 50020
 	portsMap['micro-transactions-read-api'] = 50030
+	portsMap['micro-transactions-api'] = 50040
 	
     // now build, based on the configuration provided
     node {		
